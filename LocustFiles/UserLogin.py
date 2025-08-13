@@ -1,4 +1,5 @@
 import re
+import os
 from readtestdata import CsvRead
 from locust import task, TaskSet
 from token_handler import TokenHandler
@@ -12,6 +13,9 @@ class UserLogin(TaskSet):
         self.access_token=""
         self.refresh_token=""
 
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        self.csv_path_users = os.path.join(base_dir, "TestDataFiles", "TWPNusers.csv")
+
     def on_start(self):
         """Login and store token before executing other tasks"""
         self.login()
@@ -19,8 +23,7 @@ class UserLogin(TaskSet):
     @task
     def login(self):
         # Modify with your actual login payload
-        test_data = CsvRead("../TestDataFiles/TWPNusers.csv").read()
-
+        test_data = CsvRead(self.csv_path_users).read()
         data = {
 
             "email": test_data['email'],
