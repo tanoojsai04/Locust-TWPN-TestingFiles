@@ -1,17 +1,18 @@
 import csv
 import random
-
+import os
 
 class CsvRead:
 
     def __init__(self, file):
-        try:
-            file = open(file)
-        except FileNotFoundError:
-            print("File not found")
+        if not os.path.exists(file):
+            raise FileNotFoundError(f"CSV file not found: {file}")
 
-        self.file = file
-        self.reader = csv.DictReader(file)
+        with open(file, newline='', encoding='utf-8') as f:
+            self.rows = list(csv.DictReader(f))
+
+        if not self.rows:
+            raise ValueError(f"No rows found in CSV: {file}")
 
     def read(self):
-        return random.choice(list(self.reader))
+        return random.choice(self.rows)
