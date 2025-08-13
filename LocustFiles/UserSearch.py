@@ -2,6 +2,7 @@ from readtestdata import CsvRead
 from locust import task, TaskSet
 from token_handler import TokenHandler
 from logger import log_info, log_error
+import os
 
 class UserSearch(TaskSet):
 
@@ -13,6 +14,9 @@ class UserSearch(TaskSet):
         self.access_token = None
         self.userId = None
         self.common_headers = ""
+
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        self.csv_path_search = os.path.join(base_dir, "TestDataFiles", "twpntestfileSheet1.csv")
 
     def on_start(self):
         # ✅ Retrieve tokens from TokenHandler
@@ -37,7 +41,7 @@ class UserSearch(TaskSet):
         if "search_basic" not in self.run_only:
             return  # ❌ Skip if not in allowed list
 
-        test_data = CsvRead("../TestDataFiles/twpntestfileSheet1.csv").read()
+        test_data = CsvRead(self.csv_path_search).read()
 
         data = {
 
@@ -60,6 +64,15 @@ class UserSearch(TaskSet):
         if "search_radius" not in self.run_only:
             return
 
+        test_data = CsvRead(self.csv_path_search).read()
+
+        data = {
+
+            "type": test_data['type'],
+            "country": test_data['country'],
+            "sort": test_data['sort']
+        }
+
         url = f"/api/twpn/property/radius-search?userId={self.userId}&preference=false&unit=km&limit=30&page=1&&sort=LowestPrice&type=Sale&radius=5&lng=79.808708&lat=11.942923"
 
         with self.client.get(url=url, headers=self.common_headers, name="RadiusSearch-propertySnap",  catch_response=True) as response:
@@ -75,7 +88,7 @@ class UserSearch(TaskSet):
         if "search_complete" not in self.run_only:
             return
 
-        test_data = CsvRead("../TestDataFiles/twpntestfileSheet1.csv").read()
+        test_data = CsvRead(self.csv_path_search).read()
 
         data = {
 
@@ -102,7 +115,7 @@ class UserSearch(TaskSet):
         if "search_global" not in self.run_only:
             return
 
-        test_data = CsvRead("../TestDataFiles/twpntestfileSheet1.csv").read()
+        test_data = CsvRead(self.csv_path_search).read()
 
         params = {
 
@@ -126,7 +139,7 @@ class UserSearch(TaskSet):
         if "search_advanced_dropdown" not in self.run_only:
             return
 
-        test_data = CsvRead("../TestDataFiles/twpntestfileSheet1.csv").read()
+        test_data = CsvRead(self.csv_path_search).read()
 
         data = {
 
